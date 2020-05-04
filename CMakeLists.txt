@@ -1,10 +1,17 @@
 cmake_minimum_required(VERSION 3.0.0)
 
-project(dynalo)
+project(
+    "dynalo"
+    LANGUAGES CXX
+    VERSION 1.0.3
+    DESCRIPTION "C++ dyamic library loader"
+    )
 
 #set(CMAKE_CXX_STANDARD          11 )
 #set(CMAKE_CXX_STANDARD_REQUIRED ON )
 #set(CMAKE_CXX_EXTENSIONS        OFF)
+
+include(GNUInstallDirs)
 
 add_library(${PROJECT_NAME} INTERFACE)
 target_include_directories(${PROJECT_NAME} INTERFACE
@@ -17,8 +24,6 @@ if (UNIX)
 elseif(WIN32)
     target_link_libraries(${PROJECT_NAME} INTERFACE kernel32)
 endif()
-
-
 
 install(
     DIRECTORY   "include/${PROJECT_NAME}"
@@ -57,5 +62,9 @@ install(
     "${CONFIG_PACKAGE_BUILD_LOCATION}/${PROJECT_NAME}ConfigVersion.cmake"
     DESTINATION "${CONFIG_PACKAGE_INSTALL_LOCATION}"
 )
+
+set(CPACK_RESOURCE_FILE_LICENSE "${PROJECT_SOURCE_DIR}/LICENSE")
+
+include(CPack)
 
 add_subdirectory(test)
