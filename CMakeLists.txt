@@ -1,5 +1,12 @@
 cmake_minimum_required(VERSION 3.0.0)
 
+###############
+# ASI default settings
+list(APPEND CMAKE_MODULE_PATH "$ENV{ASV_CMAKE}")
+include(asv_cmake_defaults)
+asv_cmake_defaults( )
+###############
+
 project(dynalo)
 
 #set(CMAKE_CXX_STANDARD          11 )
