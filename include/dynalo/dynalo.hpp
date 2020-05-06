@@ -117,6 +117,12 @@ FunctionSignature* get_function(native::handle lib_handle, const std::string& fu
     return detail::get_function<FunctionSignature>(lib_handle, func_name);
 }
 
+inline
+native::handle get_exe_handle()
+{
+    return detail::get_exe_handle();
+}
+
 
 /// A shared library
 ///
