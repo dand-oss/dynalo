@@ -54,6 +54,12 @@ void close(native::handle lib_handle)
     }
 }
 
+inline
+native::handle get_exe_handle()
+{
+    return dlopen(nullptr, RTLD_LAZY); // assume exe
+}
+
 template <typename FunctionSignature>
 inline
 FunctionSignature* get_function(native::handle lib_handle, const std::string& func_name)
