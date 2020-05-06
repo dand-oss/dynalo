@@ -51,9 +51,10 @@ std::string extension()
     return detail::native::name::extension();
 }
 
-}
+} // namespace name
 
-}
+} // namespace native
+
 
 /// @param lib_name Name of the library without neither the lib prefix, suffix nor file extension
 ///
@@ -135,52 +136,70 @@ native::handle get_exe_handle()
 class library
 {
 private:
-    native::handle m_handle;
+    native::handle m_handle { native::invalid_handle() } ;
 
 public:
-    library()                          = delete;
-    library(const library&)            = delete;
-    library& operator=(const library&) = delete;
+    library() = default;
+    // copy
+    library(const library& rhs) = delete ;
+    library& operator=(const library& rhs ) = delete ;
 
-    library(library&& other)
-    : m_handle(other.m_handle)
-    {
-        other.m_handle = native::invalid_handle();
+    // move
+    library(library&& rhs)
+        : m_handle(rhs.m_handle) {
+        rhs.invalidate();
     }
 
-    library& operator=(library&& other)
-    {
-        m_handle       = other.m_handle;
-        other.m_handle = native::invalid_handle();
+    library& operator=(library&& rhs) {
+        if ( &rhs != this ) {
+            m_handle       = rhs.m_handle;
+            rhs.invalidate();
+        }
         return *this;
     }
 
     /// Unloads the shared library using dynalo::close
-    ~library()
-    {
-        if (m_handle != native::invalid_handle())
-        {
-            dynalo::close(m_handle);
-        }
+    ~library() {
+        close();
     }
 
     /// Loads a shared library using dynalo::open
-    explicit library(const std::string& dyn_lib_path)
-    : m_handle(dynalo::open(dyn_lib_path))
-    {}
+    explicit library(const std::string& dyn_lib_path) {
+        open(dyn_lib_path);
+    }
+
+    void open(const std::string& dyn_lib_path) {
+        m_handle = dynalo::open(dyn_lib_path);
+    }
+
+    void close() {
+       if ( is_loaded() ) {
+           dynalo::close(m_handle);
+           invalidate();
+       }
+    }
+    
+    void invalidate() {
+        m_handle = native::invalid_handle();
+    }
+
+    bool is_loaded() const {
+        return m_handle != native::invalid_handle() ;
+    }
 
     /// Returns a pointer to the @p func_name function using dynalo::get_function
     template <typename FunctionSignature>
-    FunctionSignature* get_function(const std::string& func_name)
+    FunctionSignature* get_function(const std::string& func_name) const
     {
         return dynalo::get_function<FunctionSignature>(m_handle, func_name);
     }
 
     /// Returns the native handle of the loaded shared library
-    native::handle get_native_handle()
+    native::handle get_native_handle() const
     {
         return m_handle;
     }
+
 };
 
 }
