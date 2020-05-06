@@ -9,6 +9,7 @@
 namespace dynalo { namespace detail
 {
 
+inline
 std::string last_error()
 {
     // https://msdn.microsoft.com/en-us/library/ms680582%28VS.85%29.aspx
