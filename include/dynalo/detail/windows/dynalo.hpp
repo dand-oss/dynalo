@@ -67,7 +67,7 @@ native::handle open(const std::string& dyn_lib_path)
     const auto lib_handle = ::LoadLibraryEx(
             dyn_lib_path.c_str(),
             nullptr,
-            LOAD_LIBRARY_SEARCH_DEFAULT_DIRS);
+            LOAD_LIBRARY_SEARCH_DLL_LOAD_DIR | LOAD_LIBRARY_SEARCH_DEFAULT_DIRS);
     if (lib_handle == nullptr)
     {
         throw std::runtime_error(std::string("Failed to open [dyn_lib_path:") + dyn_lib_path + "]: " + last_error());
