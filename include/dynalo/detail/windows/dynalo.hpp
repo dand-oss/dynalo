@@ -64,12 +64,12 @@ inline std::string extension() { return std::string("dll"); }
 inline
 native::handle open(const std::string& dyn_lib_path)
 {
-    const auto rc = SetDefaultDllDirectories(
-            LOAD_LIBRARY_SEARCH_DLL_LOAD_DIR | LOAD_LIBRARY_SEARCH_DEFAULT_DIRS);
-    if ( !rc ) {
-        throw std::runtime_error(std::string("Failed to SetDefaultDllDirectories"));
-    }
-    const auto lib_handle = ::LoadLibraryEx(dyn_lib_path.c_str(), nullptr, 0);
+    const auto lib_handle = ::LoadLibraryEx(
+            dyn_lib_path.c_str(),
+            nullptr,
+            LOAD_WITH_ALTERED_SEARCH_PATH
+            //LOAD_LIBRARY_SEARCH_DLL_LOAD_DIR | LOAD_LIBRARY_SEARCH_DEFAULT_DIRS
+            );
     if (lib_handle == nullptr)
     {
         throw std::runtime_error(std::string("Failed to open [dyn_lib_path:") + dyn_lib_path + "]: " + last_error());
