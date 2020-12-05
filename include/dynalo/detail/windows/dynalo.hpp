@@ -12,35 +12,40 @@ inline
 std::string last_error()
 {
     // https://msdn.microsoft.com/en-us/library/ms680582%28VS.85%29.aspx
-    LPVOID lpMsgBuf;
-    DWORD dw = ::GetLastError();
+    const auto dw = ::GetLastError();
 
-    ::FormatMessage(
+    STRSAFE_LPSTR lpMsgBuf = 0; // will alloc this
+    FormatMessageA(
         FORMAT_MESSAGE_ALLOCATE_BUFFER |
         FORMAT_MESSAGE_FROM_SYSTEM |
         FORMAT_MESSAGE_IGNORE_INSERTS,
-        NULL,
+        nullptr,
         dw,
         MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
-        (LPTSTR) &lpMsgBuf,
-        0, NULL );
+        reinterpret_cast<LPSTR>(&lpMsgBuf),
+        0,
+        nullptr );
 
-    LPVOID lpDisplayBuf = (LPVOID)::LocalAlloc(LMEM_ZEROINIT,
-        (::lstrlen((LPCTSTR)lpMsgBuf) + 40) * sizeof(TCHAR));
+    // get enough space for formatted string
+    auto lpDisplayBuf = (STRSAFE_LPSTR) LocalAlloc(LMEM_ZEROINIT, strlen(lpMsgBuf) + 40);
 
-    ::StringCchPrintf((LPTSTR)lpDisplayBuf,
-        ::LocalSize(lpDisplayBuf) / sizeof(TCHAR),
-        TEXT("Failed with error %d: %s"),
-        dw, lpMsgBuf);
+    // fancy sprintf
+    StringCchPrintfA(
+        lpDisplayBuf,
+        LocalSize(lpDisplayBuf),
+        "Failed with error %d: %s",
+        dw,
+        lpMsgBuf);
 
-    std::string err_str((LPCTSTR)lpDisplayBuf);
+    // copy out
+    std::string err_str(lpDisplayBuf);
 
-    ::LocalFree(lpMsgBuf);
-    ::LocalFree(lpDisplayBuf);
+    // done
+    LocalFree(lpMsgBuf);
+    LocalFree(lpDisplayBuf);
 
     return err_str;
 }
-
 
 namespace native
 {
@@ -63,7 +68,7 @@ inline std::string extension() { return std::string("dll"); }
 inline
 native::handle open(const std::string& dyn_lib_path)
 {
-    native::handle lib_handle = ::LoadLibrary(dyn_lib_path.c_str());
+    native::handle lib_handle = ::LoadLibraryA(dyn_lib_path.c_str());
     if (lib_handle == nullptr)
     {
         throw std::runtime_error(std::string("Failed to open [dyn_lib_path:") + dyn_lib_path + "]: " + last_error());
