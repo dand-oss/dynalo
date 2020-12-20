@@ -7,6 +7,13 @@ project(
     DESCRIPTION "C++ dyamic library loader"
     )
 
+###############
+# ASI default settings
+list(APPEND CMAKE_MODULE_PATH "$ENV{ASV_CMAKE}")
+include(asv_cmake_defaults)
+asv_cmake_defaults( )
+###############
+
 #set(CMAKE_CXX_STANDARD          11 )
 #set(CMAKE_CXX_STANDARD_REQUIRED ON )
 #set(CMAKE_CXX_EXTENSIONS        OFF)
