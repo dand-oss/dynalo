@@ -5,7 +5,7 @@
 #elif defined(_WIN32) || defined(_WIN64)
     #define DYNALO_HAS_WINDOWS
 #elif defined(__APPLE__) || defined(__MACH__)
-    #define DYNALO_HAS_MAC
+    #define DYNALO_HAS_MACOS
 #else
     #error "dynalo/detail/config.hpp OS Not Supported"
 #endif
