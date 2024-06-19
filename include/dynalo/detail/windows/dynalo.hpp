@@ -71,7 +71,7 @@ native::handle open(const std::string& dyn_lib_path)
     native::handle lib_handle = ::LoadLibraryA(dyn_lib_path.c_str());
     if (lib_handle == nullptr)
     {
-        throw std::runtime_error(std::string("Failed to open [dyn_lib_path:") + dyn_lib_path + "]: " + last_error());
+        throw std::runtime_error(std::string("Failed to open [dyn_lib_path: '") + dyn_lib_path + "']: " + last_error());
     }
 
     return lib_handle;
@@ -100,7 +100,7 @@ FunctionSignature* get_function(native::handle lib_handle, const std::string& fu
     FARPROC func_ptr = ::GetProcAddress(lib_handle, func_name.c_str());
     if (func_ptr == nullptr)
     {
-        throw std::runtime_error(std::string("Failed to get [func_name:") + func_name + "]: " + last_error());
+        throw std::runtime_error(std::string("Failed to get [func_name: '") + func_name + "']: " + last_error());
     }
 
     return reinterpret_cast<FunctionSignature*>(func_ptr);
