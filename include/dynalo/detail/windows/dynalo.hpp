@@ -68,6 +68,11 @@ inline std::string extension() { return std::string("dll"); }
 inline
 native::handle open(const std::string& dyn_lib_path)
 {
+    // support MemoryLoadLibrary
+    if (const auto existingHandle = GetModuleHandleA(dllName.c_str())) {
+        return existingHandle ;
+    }
+
     native::handle lib_handle = ::LoadLibraryA(dyn_lib_path.c_str());
     if (lib_handle == nullptr)
     {
